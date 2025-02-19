@@ -114,13 +114,13 @@ void Renderer::drawScene()
     for(const std::shared_ptr<MeshInstance>& instance : m_instances)
     {          
         std::vector<UniformSlot> uniforms(3 + m_pointLights.size());
-
+        
         glm::mat4 view = glm::lookAt(m_activeCamera->m_position, m_activeCamera->m_position + m_activeCamera->m_front, m_activeCamera->m_up);
         glm::mat4 projection = glm::perspective(glm::radians(m_activeCamera->m_zoom), (float) m_windowWidth / m_windowHeight, m_activeCamera->m_nearPlane, m_activeCamera->m_farPlane);
 
         uniforms.push_back({"view", UniformType.MAT_FLOAT4, glm::value_ptr(view)});
         uniforms.push_back({"projection", UniformType.MAT_FLOAT4, glm::value_ptr(projection)});
-        uniforms.push_back("pointLightCount", UniformType.UINT, &m_pointLights.size());
+        uniforms.push_back("poitnLightCount", UniformType.UINT, &m_pointLights.size());
 
         i = 0;
         for(const std::shared_ptr<PointLight>& pointLight : m_pointLights)

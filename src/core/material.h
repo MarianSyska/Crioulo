@@ -89,12 +89,13 @@ namespace Crioulo
                             m_shader->setFloat(uniformSlot.name, (GLfloat*) uniformSlot.data);
                             break;
                         case FLOAT2:
-                            //implement
+                            m_shader->setFloat2(uniformSlot.name, (GLfloat*) uniformSlot.data);
                             break;
                         case FLOAT3:
-                            //implement
+                            m_shader->setFloat3(uniformSlot.name, (GLfloat*) uniformSlot.data);
                             break;
                         case FLOAT4:
+                            m_shader->setFloat4(uniformSlot.name, (GLfloat*) uniformSlot.data);
                             break;
                         case INT:
                             m_shader->setInt(uniformSlot.name, (GLint*) uniformSlot.data);
@@ -106,6 +107,7 @@ namespace Crioulo
                         case INT4:
                             break;
                         case UINT:
+                            m_shader->setUInt(uniformSlot.name, (GLuint*) uniformSlot.data);
                             break;
                         case UINT2:
                             break;
