@@ -11,6 +11,7 @@
 namespace Crioulo
 {
     class Renderer;
+    class MeshInstance;
 
     struct Vertex {
         glm::vec3 Position;
@@ -27,6 +28,7 @@ namespace Crioulo
     class Mesh {
         
         friend class Renderer;
+        friend class MeshInstance;
         
         public:
 
@@ -66,12 +68,13 @@ namespace Crioulo
                 glEnableVertexAttribArray(2);	
                 glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
             }
-            
-            inline void bind()
+
+            inline void draw() const
             {
                 glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
                 glBindVertexArray(m_vao);
+                glDrawElements(GL_TRIANGLES, m_vertexCount, GL_UNSIGNED_INT, 0);
             }
     };
 };

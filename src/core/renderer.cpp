@@ -3,6 +3,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <string>
 #include <utility>
+#include <algorithm>
 
 #include "camera.h"
 #include "material.h"
@@ -111,31 +112,15 @@ void Renderer::drawScene()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for(const std::shared_ptr<MeshInstance>& instance : m_instances)
-    {  
-        instance->m_mesh->bind();
+    {          
+        std::vector<UniformSlot> uniforms(3 + m_pointLights.size());
 
-        instance->m_material->m_shader->use();
-
-        glUniformMatrix4fv(glGetUniformLocation(instance->m_material->m_shader->m_id, "model"), 1, GL_FALSE, glm::value_ptr(instance->m_transform));
-        
-        //send as uniform block
         glm::mat4 view = glm::lookAt(m_activeCamera->m_position, m_activeCamera->m_position + m_activeCamera->m_front, m_activeCamera->m_up);
         glm::mat4 projection = glm::perspective(glm::radians(m_activeCamera->m_zoom), (float) m_windowWidth / m_windowHeight, m_activeCamera->m_nearPlane, m_activeCamera->m_farPlane);
-        glUniformMatrix4fv(glGetUniformLocation(instance->m_material->m_shader->m_id, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(instance->m_material->m_shader->m_id, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-        //send textures once and on change
-        unsigned int i = 0;
-        for(const TextureSlot& textureSlot : instance->m_material->m_textures)
-        {
-            glActiveTexture(GL_TEXTURE0 + i);
-            glUniform1i(glGetUniformLocation(instance->m_material->m_shader->m_id, textureSlot.slot.c_str()), i);
-            glBindTexture(GL_TEXTURE_2D, textureSlot.texture->m_id);
-            i++;
-        }
-
-        //send lights as uniform block
-        glUniform1ui(glGetUniformLocation(instance->m_material->m_shader->m_id, "poitnLightCount"), m_pointLights.size());
+        uniforms.push_back({"view", UniformType.MAT_FLOAT4, glm::value_ptr(view)});
+        uniforms.push_back({"projection", UniformType.MAT_FLOAT4, glm::value_ptr(projection)});
+        uniforms.push_back("pointLightCount", UniformType.UINT, &m_pointLights.size());
 
         i = 0;
         for(const std::shared_ptr<PointLight>& pointLight : m_pointLights)
@@ -144,12 +129,11 @@ void Renderer::drawScene()
             {
                 break;
             }
-            glUniform3fv(glGetUniformLocation(instance->m_material->m_shader->m_id, ("pointLights[" + std::to_string(i) +  "].position").c_str()), 1, glm::value_ptr(pointLight->m_position));
-            glUniform1fv(glGetUniformLocation(instance->m_material->m_shader->m_id, ("pointLights[" + std::to_string(i) +  "].intensity").c_str()), 1, &pointLight->m_intensity);
-            glUniform4fv(glGetUniformLocation(instance->m_material->m_shader->m_id, ("pointLights[" + std::to_string(i) +  "].color").c_str()), 1, glm::value_ptr(pointLight->m_color));
+            uniforms.push_back("pointLights[" + std::to_string(i) +  "].position", UniformType.FLOAT3, &pointLight->m_position);
+            uniforms.push_back("pointLights[" + std::to_string(i) +  "].intensity", UniformType.FLOAT, &pointLight->m_intensity);
+            uniforms.push_back("pointLights[" + std::to_string(i) +  "].color", UniformType.FLOAT4, &pointLight->m_color);
         }
-        
-        glDrawArrays(GL_TRIANGLES, 0, instance->m_mesh->m_vertexCount);
+        instance->draw(uniforms);
     }
     glfwSwapBuffers(window);
 }

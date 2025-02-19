@@ -14,10 +14,12 @@
 namespace Crioulo
 {
     class Renderer;
+    class Material;
 
     class Shader
     {
         friend class Renderer;
+        friend class Material;
 
         public:
 
@@ -25,27 +27,7 @@ namespace Crioulo
             {
                 glDeleteProgram(m_id);
             }
-
-            void setBool(const std::string &name, bool value) const
-            {         
-                glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value); 
-            }
             
-            void setInt(const std::string &name, int value) const
-            { 
-                glUniform1i(glGetUniformLocation(m_id, name.c_str()), value); 
-            }
-
-            void setFloat(const std::string &name, float value) const
-            { 
-                glUniform1f(glGetUniformLocation(m_id, name.c_str()), value); 
-            }
-
-            void setMat4(const std::string &name, glm::mat4 value)
-            {
-                glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
-            }
-
         private:
 
             unsigned int m_id;
@@ -78,6 +60,31 @@ namespace Crioulo
             void use() 
             { 
                 glUseProgram(m_id); 
+            }
+
+            void setInt(const std::string &name, GLint* value) const
+            { 
+                glUniform1iv(glGetUniformLocation(m_id, name.c_str()), 1, *value); 
+            }
+
+            void setFloat(const std::string &name, GLfloat* value) const
+            { 
+                glUniform1fv(glGetUniformLocation(m_id, name.c_str()), 1, *value); 
+            }
+
+            void setMat2(const std::string &name, GLfloat* value)
+            {
+                glUniformMatrix2fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, *value);
+            }
+
+            void setMat3(const std::string &name, GLfloat* value)
+            {
+                glUniformMatrix3fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, *value);
+            }
+
+            void setMat4(const std::string &name, GLfloat* value)
+            {
+                glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, *value);
             }
 
             void checkCompileErrors(unsigned int shader, std::string type)
