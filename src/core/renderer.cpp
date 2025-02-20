@@ -4,15 +4,15 @@
 #include <string>
 #include <utility>
 
-#include "camera.h"
-#include "material.h"
-#include "mesh_instance.h"
-#include "mesh.h"
-#include "shader.h"
-#include "texture.h"
-#include "light.h"
+#include <crioulo/camera.h>
+#include <crioulo/material.h>
+#include <crioulo/mesh_instance.h>
+#include <crioulo/mesh.h>
+#include <crioulo/shader.h>
+#include <crioulo/texture.h>
+#include <crioulo/light.h>
 
-#include "renderer.h"
+#include <crioulo/renderer.h>
 
 #ifdef CRIOULO_ENABLE_DEV_DEBUG
 #define CRIOULO_GL_ERROR_CHECK \
@@ -58,7 +58,7 @@ namespace Crioulo
         case GL_DEBUG_SOURCE_APPLICATION:     std::cout << "Source: Application"; break;
         case GL_DEBUG_SOURCE_OTHER:           std::cout << "Source: Other"; break;
     } std::cout << std::endl;
-
+        
     switch (type)
     {
         case GL_DEBUG_TYPE_ERROR:               std::cout << "Type: Error"; break;
