@@ -8,6 +8,7 @@
 namespace Crioulo
 {
     class Renderer;
+    class Material;
 
     struct TextureData
     {
@@ -20,6 +21,7 @@ namespace Crioulo
     class Texture
     {
         friend class Renderer;
+        friend class Material;
 
         public:
 

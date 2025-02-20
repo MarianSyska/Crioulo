@@ -20,7 +20,7 @@ namespace Crioulo
         FLOAT3,
         FLOAT4,
         INT,
-        INT2
+        INT2,
         INT3,
         INT4,
         UINT,
@@ -36,7 +36,7 @@ namespace Crioulo
         MATRIX_FLOAT4_2,
         MATRIX_FLOAT3_4,
         MATRIX_FLOAT4_3
-    }
+    };
 
     struct TextureSlot
     {
@@ -48,7 +48,7 @@ namespace Crioulo
     {
         const char* name;
         UniformType type;
-        (void*) data;
+        void* data;
     };
 
     class Material
@@ -79,9 +79,9 @@ namespace Crioulo
                 }
             }
 
-            inline void setUniforms(const std::array<UnifromSlot>& uniformSlots)
+            inline void setUniforms(const std::vector<UniformSlot>& uniformSlots)
             {
-                for(const UniformSlot uniformSlot& : uniformSlots)
+                for(const UniformSlot& uniformSlot : uniformSlots)
                 {
                     switch (uniformSlot.type)
                     {

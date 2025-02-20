@@ -32,9 +32,9 @@ namespace Crioulo
 
         private:
 
-            inline void draw(std::vector<UnifromSlot>& uniformSlots)
+            inline void draw(std::vector<UniformSlot>& uniformSlots)
             {
-                uniformSlots.push_back({"model", UniformType.MATRIX_FLOAT4, glm::value_ptr(m_transform)});
+                uniformSlots.push_back({"model", UniformType::MATRIX_FLOAT4, glm::value_ptr(m_transform)});
 
                 m_material->apply();
 

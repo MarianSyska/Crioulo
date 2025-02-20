@@ -5,15 +5,13 @@
 #include <utility>
 #include <algorithm>
 
-#include "camera.h"
-#include "material.h"
-#include "mesh_instance.h"
-#include "mesh.h"
-#include "shader.h"
-#include "texture.h"
-#include "light.h"
-
-#include "renderer.h"
+#include <crioulo/renderer.h>
+#include <crioulo/material.h>
+#include <crioulo/mesh_instance.h>
+#include <crioulo/mesh.h>
+#include <crioulo/shader.h>
+#include <crioulo/texture.h>
+#include <crioulo/light.h>
 
 #ifdef CRIOULO_ENABLE_DEV_DEBUG
 #define CRIOULO_GL_ERROR_CHECK \
@@ -113,25 +111,33 @@ void Renderer::drawScene()
 
     for(const std::shared_ptr<MeshInstance>& instance : m_instances)
     {          
-        std::vector<UniformSlot> uniforms(3 + m_pointLights.size());
+        std::vector<UniformSlot> uniforms(3 + std::min(static_cast<int>(m_pointLights.size()), 3) * 3);
         
         glm::mat4 view = glm::lookAt(m_activeCamera->m_position, m_activeCamera->m_position + m_activeCamera->m_front, m_activeCamera->m_up);
         glm::mat4 projection = glm::perspective(glm::radians(m_activeCamera->m_zoom), (float) m_windowWidth / m_windowHeight, m_activeCamera->m_nearPlane, m_activeCamera->m_farPlane);
 
-        uniforms.push_back({"view", UniformType.MAT_FLOAT4, glm::value_ptr(view)});
-        uniforms.push_back({"projection", UniformType.MAT_FLOAT4, glm::value_ptr(projection)});
-        uniforms.push_back("poitnLightCount", UniformType.UINT, &m_pointLights.size());
+        uniforms.push_back({"view", UniformType::MATRIX_FLOAT4, glm::value_ptr(view)});
+        uniforms.push_back({"projection", UniformType::MATRIX_FLOAT4, glm::value_ptr(projection)});
 
-        i = 0;
+        int pointLightCount = m_pointLights.size();
+        uniforms.push_back({"pointLightCount", UniformType::UINT, &pointLightCount});
+
+        unsigned int i = 0;
+        std::vector<std::string> pointLightNames(3 * std::min(static_cast<int>(m_pointLights.size()), 3));
+
         for(const std::shared_ptr<PointLight>& pointLight : m_pointLights)
         {
             if(i > 3)
             {
                 break;
             }
-            uniforms.push_back("pointLights[" + std::to_string(i) +  "].position", UniformType.FLOAT3, &pointLight->m_position);
-            uniforms.push_back("pointLights[" + std::to_string(i) +  "].intensity", UniformType.FLOAT, &pointLight->m_intensity);
-            uniforms.push_back("pointLights[" + std::to_string(i) +  "].color", UniformType.FLOAT4, &pointLight->m_color);
+            pointLightNames[i] = "pointLights[" + std::to_string(i) +  "].position";
+            pointLightNames[i + 1] = "pointLights[" + std::to_string(i) +  "].intensity";
+            pointLightNames[i + 2] = "pointLights[" + std::to_string(i) +  "].color";
+
+            uniforms.push_back({pointLightNames[i].c_str(), UniformType::FLOAT3, &pointLight->m_position});
+            uniforms.push_back({pointLightNames[i + 1].c_str(), UniformType::FLOAT, &pointLight->m_intensity});
+            uniforms.push_back({pointLightNames[i + 2].c_str(), UniformType::FLOAT4, &pointLight->m_color});
         }
         instance->draw(uniforms);
     }

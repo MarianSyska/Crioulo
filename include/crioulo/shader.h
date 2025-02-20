@@ -64,47 +64,47 @@ namespace Crioulo
 
             void setInt(const std::string &name, GLint* value) const
             { 
-                glUniform1iv(glGetUniformLocation(m_id, name.c_str()), 1, *value); 
+                glUniform1iv(glGetUniformLocation(m_id, name.c_str()), 1, value); 
             }
 
             void setUInt(const std::string &name, GLuint* value)
             {
-                glUniform1uiv(glGetUniformLocation(m_id, name.c_str()), 1, *value);
+                glUniform1uiv(glGetUniformLocation(m_id, name.c_str()), 1, value);
             }
 
             void setFloat(const std::string &name, GLfloat* value) const
             { 
-                glUniform1fv(glGetUniformLocation(m_id, name.c_str()), 1, *value); 
+                glUniform1fv(glGetUniformLocation(m_id, name.c_str()), 1, value); 
             }
 
             void setFloat2(const std::string &name, GLfloat* value) const
             { 
-                glUniform1f2v(glGetUniformLocation(m_id, name.c_str()), 1, *value); 
+                glUniform2fv(glGetUniformLocation(m_id, name.c_str()), 1, value); 
             }
 
             void setFloat3(const std::string &name, GLfloat* value) const
             { 
-                glUniform1f3v(glGetUniformLocation(m_id, name.c_str()), 1, *value); 
+                glUniform3fv(glGetUniformLocation(m_id, name.c_str()), 1, value); 
             }
 
             void setFloat4(const std::string &name, GLfloat* value) const
             { 
-                glUniform1f4v(glGetUniformLocation(m_id, name.c_str()), 1, *value); 
+                glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, value); 
             }
 
             void setMat2(const std::string &name, GLfloat* value)
             {
-                glUniformMatrix2fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, *value);
+                glUniformMatrix2fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, value);
             }
 
             void setMat3(const std::string &name, GLfloat* value)
             {
-                glUniformMatrix3fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, *value);
+                glUniformMatrix3fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, value);
             }
 
             void setMat4(const std::string &name, GLfloat* value)
             {
-                glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, *value);
+                glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, value);
             }
 
             void checkCompileErrors(unsigned int shader, std::string type)
