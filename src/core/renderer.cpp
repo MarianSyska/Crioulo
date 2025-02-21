@@ -109,36 +109,39 @@ void Renderer::drawScene()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    std::vector<UniformSlot> uniforms;
+    uniforms.reserve(30);
+
+    std::vector<std::string> pointLightNames(3 * std::min(static_cast<int>(m_pointLights.size()), 3));
+
+    unsigned int pointLightCount = m_pointLights.size();
+    uniforms.push_back({"pointLightCount", UniformType::UINT, &pointLightCount});
+
+    unsigned int i = 0;
+    for(const std::shared_ptr<PointLight>& pointLight : m_pointLights)
+    {
+        if(i > 3)
+        {
+            break;
+        }
+        pointLightNames[i] = "pointLights[" + std::to_string(i) +  "].position";
+        pointLightNames[i + 1] = "pointLights[" + std::to_string(i) +  "].intensity";
+        pointLightNames[i + 2] = "pointLights[" + std::to_string(i) +  "].color";
+
+        uniforms.push_back({pointLightNames[i].c_str(), UniformType::FLOAT3, &pointLight->m_position});
+        uniforms.push_back({pointLightNames[i + 1].c_str(), UniformType::FLOAT, &pointLight->m_intensity});
+        uniforms.push_back({pointLightNames[i + 2].c_str(), UniformType::FLOAT4, &pointLight->m_color});
+        i++;
+    }
+
+    glm::mat4 view = glm::lookAt(m_activeCamera->m_position, m_activeCamera->m_position + m_activeCamera->m_front, m_activeCamera->m_up);
+    glm::mat4 projection = glm::perspective(glm::radians(m_activeCamera->m_zoom), (float) m_windowWidth / m_windowHeight, m_activeCamera->m_nearPlane, m_activeCamera->m_farPlane);
+
+    uniforms.push_back({"view", UniformType::MATRIX_FLOAT4, glm::value_ptr(view)});
+    uniforms.push_back({"projection", UniformType::MATRIX_FLOAT4, glm::value_ptr(projection)});
+
     for(const std::shared_ptr<MeshInstance>& instance : m_instances)
     {          
-        std::vector<UniformSlot> uniforms(3 + std::min(static_cast<int>(m_pointLights.size()), 3) * 3);
-        
-        glm::mat4 view = glm::lookAt(m_activeCamera->m_position, m_activeCamera->m_position + m_activeCamera->m_front, m_activeCamera->m_up);
-        glm::mat4 projection = glm::perspective(glm::radians(m_activeCamera->m_zoom), (float) m_windowWidth / m_windowHeight, m_activeCamera->m_nearPlane, m_activeCamera->m_farPlane);
-
-        uniforms.push_back({"view", UniformType::MATRIX_FLOAT4, glm::value_ptr(view)});
-        uniforms.push_back({"projection", UniformType::MATRIX_FLOAT4, glm::value_ptr(projection)});
-
-        int pointLightCount = m_pointLights.size();
-        uniforms.push_back({"pointLightCount", UniformType::UINT, &pointLightCount});
-
-        unsigned int i = 0;
-        std::vector<std::string> pointLightNames(3 * std::min(static_cast<int>(m_pointLights.size()), 3));
-
-        for(const std::shared_ptr<PointLight>& pointLight : m_pointLights)
-        {
-            if(i > 3)
-            {
-                break;
-            }
-            pointLightNames[i] = "pointLights[" + std::to_string(i) +  "].position";
-            pointLightNames[i + 1] = "pointLights[" + std::to_string(i) +  "].intensity";
-            pointLightNames[i + 2] = "pointLights[" + std::to_string(i) +  "].color";
-
-            uniforms.push_back({pointLightNames[i].c_str(), UniformType::FLOAT3, &pointLight->m_position});
-            uniforms.push_back({pointLightNames[i + 1].c_str(), UniformType::FLOAT, &pointLight->m_intensity});
-            uniforms.push_back({pointLightNames[i + 2].c_str(), UniformType::FLOAT4, &pointLight->m_color});
-        }
         instance->draw(uniforms);
     }
     glfwSwapBuffers(window);

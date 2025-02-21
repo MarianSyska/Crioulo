@@ -86,19 +86,19 @@ namespace Crioulo
                     switch (uniformSlot.type)
                     {
                         case FLOAT:
-                            m_shader->setFloat(uniformSlot.name, (GLfloat*) uniformSlot.data);
+                            m_shader->setFloat(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case FLOAT2:
-                            m_shader->setFloat2(uniformSlot.name, (GLfloat*) uniformSlot.data);
+                            m_shader->setFloat2(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case FLOAT3:
-                            m_shader->setFloat3(uniformSlot.name, (GLfloat*) uniformSlot.data);
+                            m_shader->setFloat3(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case FLOAT4:
-                            m_shader->setFloat4(uniformSlot.name, (GLfloat*) uniformSlot.data);
+                            m_shader->setFloat4(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case INT:
-                            m_shader->setInt(uniformSlot.name, (GLint*) uniformSlot.data);
+                            m_shader->setInt(uniformSlot.name, static_cast<int*>(uniformSlot.data));
                             break;
                         case INT2:
                             break;
@@ -107,7 +107,7 @@ namespace Crioulo
                         case INT4:
                             break;
                         case UINT:
-                            m_shader->setUInt(uniformSlot.name, (GLuint*) uniformSlot.data);
+                            m_shader->setUInt(uniformSlot.name, static_cast<unsigned int*>(uniformSlot.data));
                             break;
                         case UINT2:
                             break;
@@ -116,13 +116,13 @@ namespace Crioulo
                         case UINT4:
                             break;
                         case MATRIX_FLOAT2:
-                            m_shader->setMat2(uniformSlot.name, (GLfloat*) uniformSlot.data);
+                            m_shader->setMat2(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case MATRIX_FLOAT3:
-                            m_shader->setMat3(uniformSlot.name, (GLfloat*) uniformSlot.data);
+                            m_shader->setMat3(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case MATRIX_FLOAT4:
-                            m_shader->setMat4(uniformSlot.name, (GLfloat*) uniformSlot.data);
+                            m_shader->setMat4(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case MATRIX_FLOAT2_3:
                             break;

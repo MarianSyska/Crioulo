@@ -41,11 +41,11 @@ namespace Crioulo
 
         private:
             unsigned int m_vbo, m_ebo, m_vao;
-            unsigned int m_vertexCount;
+            unsigned int m_indeciesCount;
 
             Mesh(const MeshData& data)
             {
-                m_vertexCount = static_cast<unsigned int>(data.indices.size());
+                m_indeciesCount = static_cast<unsigned int>(data.indices.size());
 
                 glGenVertexArrays(1, &m_vao);
                 glGenBuffers(1, &m_vbo);
