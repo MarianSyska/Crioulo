@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <algorithm>
+#include <Tracy.hpp>
 
 #include <crioulo/renderer.h>
 #include <crioulo/material.h>
@@ -106,6 +107,7 @@ Renderer::Renderer(GLFWwindow* window)
 
 void Renderer::drawScene()
 {
+    ZoneScoped;
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -144,6 +146,7 @@ void Renderer::drawScene()
     {          
         instance->draw(uniforms);
     }
+    FrameMark;
     glfwSwapBuffers(window);
 }
 
