@@ -74,7 +74,7 @@ namespace Crioulo
                 glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
                 glBindVertexArray(m_vao);
-                glDrawElements(GL_TRIANGLES, m_vertexCount, GL_UNSIGNED_INT, 0);
+                glDrawArrays(GL_TRIANGLES, 0, m_indeciesCount);
             }
     };
 };
