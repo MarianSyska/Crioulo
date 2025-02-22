@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "camera.h"
 #include "material.h"

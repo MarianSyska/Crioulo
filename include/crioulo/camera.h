@@ -2,7 +2,6 @@
 #define CRIOULO_CAMERA_H
 
 #include <glm/vec3.hpp>
-#include <glad/glad.h>
 
 namespace Crioulo 
 {

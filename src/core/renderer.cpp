@@ -14,26 +14,6 @@
 #include <crioulo/texture.h>
 #include <crioulo/light.h>
 
-#ifdef CRIOULO_ENABLE_DEV_DEBUG
-#define CRIOULO_GL_ERROR_CHECK \
-        switch(glGetError())  \
-        { \
-            case GL_INVALID_VALUE: \
-                std::cout << __LINE__ << " " << __FILE__ << std::endl; \
-            case GL_INVALID_ENUM: \
-                std::cout << __LINE__ << " " << __FILE__ << std::endl; \
-            case GL_INVALID_OPERATION: \
-                std::cout << __LINE__ << " " << __FILE__ << std::endl; \
-            case GL_INVALID_FRAMEBUFFER_OPERATION: \
-                std::cout << __LINE__ << " " << __FILE__ << std::endl; \
-            case GL_OUT_OF_MEMORY: \
-                std::cout << __LINE__ << " " << __FILE__ << std::endl; \
-        }
-
-#else
-#define CRIOULO_GL_ERROR_CHECK 
-#endif
-
 namespace Crioulo 
 {
     void logOpenGL(GLenum source, 
