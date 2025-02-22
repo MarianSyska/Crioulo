@@ -88,6 +88,7 @@ using namespace Crioulo;
 Renderer::Renderer(GLFWwindow* window)
 {
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
     this->window = window;
 
     bindOpenGLFunctions();
