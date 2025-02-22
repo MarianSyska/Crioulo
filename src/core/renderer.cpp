@@ -103,6 +103,8 @@ Renderer::Renderer(GLFWwindow* window)
     }
 
     glEnable(GL_DEPTH_TEST);
+
+    m_uniformsTemp.reserve(30);
 }
 
 void Renderer::drawScene()
@@ -111,13 +113,10 @@ void Renderer::drawScene()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    std::vector<UniformSlot> uniforms;
-    uniforms.reserve(30);
-
     std::vector<std::string> pointLightNames(3 * std::min(static_cast<int>(m_pointLights.size()), 3));
 
     unsigned int pointLightCount = m_pointLights.size();
-    uniforms.push_back({"pointLightCount", UniformType::UINT, &pointLightCount});
+    m_uniformsTemp.push_back({"pointLightCount", UniformType::UINT, &pointLightCount});
 
     unsigned int i = 0;
     for(const std::shared_ptr<PointLight>& pointLight : m_pointLights)
@@ -130,24 +129,25 @@ void Renderer::drawScene()
         pointLightNames[i + 1] = "pointLights[" + std::to_string(i) +  "].intensity";
         pointLightNames[i + 2] = "pointLights[" + std::to_string(i) +  "].color";
 
-        uniforms.push_back({pointLightNames[i].c_str(), UniformType::FLOAT3, &pointLight->m_position});
-        uniforms.push_back({pointLightNames[i + 1].c_str(), UniformType::FLOAT, &pointLight->m_intensity});
-        uniforms.push_back({pointLightNames[i + 2].c_str(), UniformType::FLOAT4, &pointLight->m_color});
+        m_uniformsTemp.push_back({pointLightNames[i].c_str(), UniformType::FLOAT3, &pointLight->m_position});
+        m_uniformsTemp.push_back({pointLightNames[i + 1].c_str(), UniformType::FLOAT, &pointLight->m_intensity});
+        m_uniformsTemp.push_back({pointLightNames[i + 2].c_str(), UniformType::FLOAT4, &pointLight->m_color});
         i++;
     }
 
     glm::mat4 view = glm::lookAt(m_activeCamera->m_position, m_activeCamera->m_position + m_activeCamera->m_front, m_activeCamera->m_up);
     glm::mat4 projection = glm::perspective(glm::radians(m_activeCamera->m_zoom), (float) m_windowWidth / m_windowHeight, m_activeCamera->m_nearPlane, m_activeCamera->m_farPlane);
 
-    uniforms.push_back({"view", UniformType::MATRIX_FLOAT4, glm::value_ptr(view)});
-    uniforms.push_back({"projection", UniformType::MATRIX_FLOAT4, glm::value_ptr(projection)});
+    m_uniformsTemp.push_back({"view", UniformType::MATRIX_FLOAT4, glm::value_ptr(view)});
+    m_uniformsTemp.push_back({"projection", UniformType::MATRIX_FLOAT4, glm::value_ptr(projection)});
 
     for(const std::shared_ptr<MeshInstance>& instance : m_instances)
     {          
-        instance->draw(uniforms);
+        instance->draw(m_uniformsTemp);
     }
-    FrameMark;
     glfwSwapBuffers(window);
+    m_uniformsTemp.resize(0);
+    FrameMark;
 }
 
 std::shared_ptr<Mesh> Renderer::loadMesh(const MeshData& data)

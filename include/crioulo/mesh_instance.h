@@ -34,6 +34,8 @@ namespace Crioulo
 
             inline void draw(std::vector<UniformSlot>& uniformSlots)
             {
+                size_t previousUniformSlotSize = uniformSlots.size();
+
                 uniformSlots.push_back({"model", UniformType::MATRIX_FLOAT4, glm::value_ptr(m_transform)});
 
                 m_material->apply();
@@ -41,6 +43,8 @@ namespace Crioulo
                 m_material->setUniforms(uniformSlots);
             
                 m_mesh->draw();
+
+                uniformSlots.resize(previousUniformSlotSize);
             }
 
             glm::mat4 m_transform;

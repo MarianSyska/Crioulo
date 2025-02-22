@@ -47,6 +47,8 @@ namespace Crioulo
             std::shared_ptr<Camera> m_activeCamera;
 
             std::vector<std::shared_ptr<PointLight>> m_pointLights;
+
+            std::vector<UniformSlot> m_uniformsTemp;
             
             void bindOpenGLFunctions();
     };
