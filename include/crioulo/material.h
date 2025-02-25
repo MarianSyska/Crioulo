@@ -40,7 +40,7 @@ namespace Crioulo
 
     struct TextureSlot
     {
-        std::shared_ptr<Texture> texture;
+        Texture texture;
         std::string slot;
     };
 
@@ -58,7 +58,7 @@ namespace Crioulo
 
         public:
         
-            Material(const std::shared_ptr<Shader>& shader, const std::vector<TextureSlot>& textures)
+            Material(Shader shader, const std::vector<TextureSlot>& textures)
             {
                 m_shader = shader;
                 m_textures = textures;
@@ -68,13 +68,13 @@ namespace Crioulo
 
             inline void apply()
             {
-                m_shader->use();
+                m_shader.use();
                 unsigned int i = 0;
                 for(const TextureSlot& textureSlot : m_textures)
                 {
                     glActiveTexture(GL_TEXTURE0 + i);
-                    glUniform1i(glGetUniformLocation(m_shader->m_id, textureSlot.slot.c_str()), i);
-                    glBindTexture(GL_TEXTURE_2D, textureSlot.texture->m_id);
+                    glUniform1i(glGetUniformLocation(m_shader.m_id, textureSlot.slot.c_str()), i);
+                    glBindTexture(GL_TEXTURE_2D, textureSlot.texture.m_id);
                     i++;
                 }
             }
@@ -86,19 +86,19 @@ namespace Crioulo
                     switch (uniformSlot.type)
                     {
                         case FLOAT:
-                            m_shader->setFloat(uniformSlot.name, static_cast<float*>(uniformSlot.data));
+                            m_shader.setFloat(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case FLOAT2:
-                            m_shader->setFloat2(uniformSlot.name, static_cast<float*>(uniformSlot.data));
+                            m_shader.setFloat2(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case FLOAT3:
-                            m_shader->setFloat3(uniformSlot.name, static_cast<float*>(uniformSlot.data));
+                            m_shader.setFloat3(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case FLOAT4:
-                            m_shader->setFloat4(uniformSlot.name, static_cast<float*>(uniformSlot.data));
+                            m_shader.setFloat4(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case INT:
-                            m_shader->setInt(uniformSlot.name, static_cast<int*>(uniformSlot.data));
+                            m_shader.setInt(uniformSlot.name, static_cast<int*>(uniformSlot.data));
                             break;
                         case INT2:
                             break;
@@ -107,7 +107,7 @@ namespace Crioulo
                         case INT4:
                             break;
                         case UINT:
-                            m_shader->setUInt(uniformSlot.name, static_cast<unsigned int*>(uniformSlot.data));
+                            m_shader.setUInt(uniformSlot.name, static_cast<unsigned int*>(uniformSlot.data));
                             break;
                         case UINT2:
                             break;
@@ -116,13 +116,13 @@ namespace Crioulo
                         case UINT4:
                             break;
                         case MATRIX_FLOAT2:
-                            m_shader->setMat2(uniformSlot.name, static_cast<float*>(uniformSlot.data));
+                            m_shader.setMat2(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case MATRIX_FLOAT3:
-                            m_shader->setMat3(uniformSlot.name, static_cast<float*>(uniformSlot.data));
+                            m_shader.setMat3(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case MATRIX_FLOAT4:
-                            m_shader->setMat4(uniformSlot.name, static_cast<float*>(uniformSlot.data));
+                            m_shader.setMat4(uniformSlot.name, static_cast<float*>(uniformSlot.data));
                             break;
                         case MATRIX_FLOAT2_3:
                             break;
@@ -140,7 +140,7 @@ namespace Crioulo
                 }
             }
 
-            std::shared_ptr<Shader> m_shader;
+            Shader m_shader;
             std::vector<TextureSlot> m_textures;
     };
 }

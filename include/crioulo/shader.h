@@ -23,15 +23,6 @@ namespace Crioulo
 
         public:
 
-            ~Shader()
-            {
-                glDeleteProgram(m_id);
-            }
-            
-        private:
-
-            unsigned int m_id;
-
             Shader(const char* vertexCode, const char* fragmentCode)
             {
                 unsigned int vertexId = glCreateShader(GL_VERTEX_SHADER);
@@ -56,6 +47,18 @@ namespace Crioulo
                 glDeleteShader(vertexId);
                 glDeleteShader(fragmentId);
             }
+
+            Shader(const Shader& shader) = default;
+            Shader() = default;
+
+            void release()
+            {
+                glDeleteProgram(m_id);
+            }
+            
+        private:
+
+            unsigned int m_id;
 
             void use() 
             { 

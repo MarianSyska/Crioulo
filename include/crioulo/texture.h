@@ -24,15 +24,6 @@ namespace Crioulo
         friend class Material;
 
         public:
-
-            ~Texture()
-            {
-                glDeleteTextures(1, &m_id);
-            }
-
-        private:
-            unsigned int m_id;
-
             Texture(const TextureData& data) 
             {
                 GLenum format;
@@ -55,6 +46,17 @@ namespace Crioulo
 
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
+
+            Texture(const Texture& texture) = default;
+            Texture() = default;
+
+            void release()
+            {
+                glDeleteTextures(1, &m_id);
+            }
+
+        private:
+            unsigned int m_id;
     };
 };
 #endif

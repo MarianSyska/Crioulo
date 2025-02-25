@@ -131,21 +131,6 @@ void Renderer::drawScene()
     FrameMark;
 }
 
-std::shared_ptr<Mesh> Renderer::loadMesh(const MeshData& data)
-{
-    return std::shared_ptr<Mesh>(new Mesh(data));
-} 
-
-std::shared_ptr<Texture> Renderer::loadTexture(const TextureData& data)
-{
-    return std::shared_ptr<Texture>(new Texture(data));
-}
-
-std::shared_ptr<Shader> Renderer::loadShader(const char* vertexCode, const char* fragmentCode)
-{
-    return std::shared_ptr<Shader>(new Shader(vertexCode, fragmentCode));
-}
-
 void Renderer::registerMeshInstance(const std::shared_ptr<MeshInstance>& instance)
 {
     m_instances.push_back(instance);

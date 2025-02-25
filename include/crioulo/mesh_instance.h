@@ -19,7 +19,7 @@ namespace Crioulo
 
         public:
             
-            MeshInstance(const std::shared_ptr<Mesh>& mesh, const std::shared_ptr<Material>& material)
+            MeshInstance(Mesh& mesh, std::shared_ptr<Material>& material)
             {
                 m_mesh = mesh;
                 m_material = material;
@@ -42,14 +42,14 @@ namespace Crioulo
 
                 m_material->setUniforms(uniformSlots);
             
-                m_mesh->draw();
+                m_mesh.draw();
 
                 uniformSlots.resize(previousUniformSlotSize);
             }
 
             glm::mat4 m_transform;
             std::shared_ptr<Material> m_material;
-            std::shared_ptr<Mesh> m_mesh;
+            Mesh m_mesh;
 
     };
 };

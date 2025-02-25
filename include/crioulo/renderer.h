@@ -22,10 +22,6 @@ namespace Crioulo
             ~Renderer(){}
             void drawScene();
             
-            std::shared_ptr<Mesh> loadMesh(const MeshData& data);
-            std::shared_ptr<Texture> loadTexture(const TextureData& data);
-            std::shared_ptr<Shader> loadShader(const char* vertexCode, const char* fragmentCode);
-            
             void registerMeshInstance(const std::shared_ptr<MeshInstance>& instance);
             void registerPointLight(const std::shared_ptr<PointLight>& pointLight);
 

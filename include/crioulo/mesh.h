@@ -32,17 +32,6 @@ namespace Crioulo
         
         public:
 
-            ~Mesh()
-            {
-                glDeleteVertexArrays(1, &m_vao);
-                glDeleteBuffers(1, &m_vbo);
-                glDeleteBuffers(1, &m_ebo);
-            }
-
-        private:
-            unsigned int m_vbo, m_ebo, m_vao;
-            unsigned int m_indeciesCount;
-
             Mesh(const MeshData& data)
             {
                 m_indeciesCount = static_cast<unsigned int>(data.indices.size());
@@ -68,6 +57,22 @@ namespace Crioulo
                 glEnableVertexAttribArray(2);	
                 glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
             }
+
+            Mesh(const Mesh& mesh) = default;
+            Mesh() = default;
+            
+            void release()
+            {
+                glDeleteVertexArrays(1, &m_vao);
+                glDeleteBuffers(1, &m_vbo);
+                glDeleteBuffers(1, &m_ebo);
+            }
+            
+            private:
+            unsigned int m_vbo, m_ebo, m_vao;
+            unsigned int m_indeciesCount;
+            
+            
 
             inline void draw() const
             {
