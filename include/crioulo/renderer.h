@@ -1,5 +1,5 @@
-#ifndef CRIOULO_H 
-#define CRIOULO_H
+#ifndef CRIOULO_RENDERER_H 
+#define CRIOULO_RENDERER_H
 
 #include <vector>
 #include <memory>
