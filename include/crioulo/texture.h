@@ -20,20 +20,14 @@ namespace Crioulo
     class Texture
     {
         friend class Renderer;
-
-        public:
-
-            ~Texture()
-            {
-                glDeleteTextures(1, &m_id);
-            }
+        friend class Material;
 
         private:
             unsigned int m_id;
 
             Texture(const TextureData& data) 
             {
-                GLenum format;
+                GLenum format = GL_RED;
                 if (data.nrComponents == 1)
                     format = GL_RED;
                 else if (data.nrComponents == 3)
@@ -52,6 +46,15 @@ namespace Crioulo
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
                 glBindTexture(GL_TEXTURE_2D, 0);
+            }
+
+            ~Texture()
+            {
+                glDeleteTextures(1, &m_id);
+            }
+
+            inline void bindTexture() {
+                glBindTexture(GL_TEXTURE_2D, m_id);
             }
     };
 };

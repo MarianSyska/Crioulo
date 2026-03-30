@@ -6,37 +6,17 @@ namespace Crioulo
 {
     class Renderer;
 
-    class PointLight
+    struct alignas(16) PointLight
     {
         friend class Renderer;
 
-        public:
+        glm::vec3 position;
+        alignas(16) glm::vec3 color;
+        alignas(16) float intensity;
 
-            PointLight()
-            {
-                
-            }
-
-            void setPosition(const glm::vec3& p_position)
-            {
-                m_position = p_position;
-            }
-
-            void setIntensity(float p_intensity)
-            {
-                m_intensity = p_intensity;
-            }
-            
-            
-            void setColor(const glm::vec3& p_color)
-            {
-                m_color = p_color;
-            }
-
-        private:
-            glm::vec3 m_position;
-            float m_intensity;
-            glm::vec3 m_color;
+    private:
+        PointLight() = default;
+        ~PointLight() = default;
     };
 }
 #endif

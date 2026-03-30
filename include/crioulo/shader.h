@@ -13,44 +13,22 @@
 
 namespace Crioulo
 {
-    class Renderer;
 
     class Shader
     {
         friend class Renderer;
-
-        public:
-
-            ~Shader()
-            {
-                glDeleteProgram(m_id);
-            }
-
-            void setBool(const std::string &name, bool value) const
-            {         
-                glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value); 
-            }
-            
-            void setInt(const std::string &name, int value) const
-            { 
-                glUniform1i(glGetUniformLocation(m_id, name.c_str()), value); 
-            }
-
-            void setFloat(const std::string &name, float value) const
-            { 
-                glUniform1f(glGetUniformLocation(m_id, name.c_str()), value); 
-            }
-
-            void setMat4(const std::string &name, glm::mat4 value)
-            {
-                glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
-            }
+        friend class Material;
 
         private:
 
             unsigned int m_id;
 
-            Shader(const char* vertexCode, const char* fragmentCode)
+            inline ~Shader()
+            {
+                glDeleteProgram(m_id);
+            }
+
+            inline Shader(const char* vertexCode, const char* fragmentCode)
             {
                 unsigned int vertexId = glCreateShader(GL_VERTEX_SHADER);
                 glShaderSource(vertexId, 1, &vertexCode, NULL);
@@ -75,12 +53,25 @@ namespace Crioulo
                 glDeleteShader(fragmentId);
             }
 
-            void use() 
-            { 
+            inline void use() 
+            {
                 glUseProgram(m_id); 
             }
 
-            void checkCompileErrors(unsigned int shader, std::string type)
+            inline unsigned int getUniformLocation(const std::string& name) {
+                return glGetUniformLocation(m_id, name.c_str());
+            }
+
+            inline bool setUniformBlockBinding(const std::string& name, unsigned int binding) {
+                unsigned int uniformIndex = glGetUniformBlockIndex(m_id, name.c_str());
+                if (uniformIndex == GL_INVALID_INDEX) {
+                    return false;
+                }
+                glUniformBlockBinding(m_id, uniformIndex, binding);
+                return true;
+            }
+
+            inline void checkCompileErrors(unsigned int shader, std::string type)
             {
                 int success;
                 char infoLog[1024];
