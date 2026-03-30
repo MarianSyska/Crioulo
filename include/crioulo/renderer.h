@@ -13,15 +13,62 @@
 #include "texture.h"
 #include "light.h"
 
+#define DEPTH_TEST_FUNCTION_LIST \
+    X(Always, GL_ALWAYS) \
+    X(Never, GL_NEVER) \
+    X(Less,  GL_LESS) \
+    X(LessOrEqual, GL_LEQUAL) \
+    X(Equal, GL_EQUAL) \
+    X(GreaterOrEqual, GL_GEQUAL) \
+    X(Greater, GL_GREATER) \
+    X(NotEqual, GL_NOTEQUAL)
+
+#define CULLING_FACE_LIST \
+    X(BackFace, GL_BACK) \
+    X(FrontFace, GL_FRONT)
+
+#define CULLING_FRONT_LIST \
+    X(Clockwise, GL_CW) \
+    X(CounterClockwise, GL_CCW)
+
+
 namespace Crioulo 
 {
+    enum class DepthTestFunction {
+#define X(name, gl_val) name,
+        DEPTH_TEST_FUNCTION_LIST
+#undef X
+    };
+
+
+    enum class CullingFace {
+#define X(name, gl_val) name,
+        CULLING_FACE_LIST
+#undef X
+    };
+
+
+    enum class CullingFront {
+#define X(name, gl_val) name,
+        CULLING_FRONT_LIST
+#undef X
+    };
+
+
+    struct RendererSettings {
+        bool depthTest = true;
+        DepthTestFunction depthTestFunction = DepthTestFunction::Less;
+        bool faceCulling = true;
+        CullingFace cullingFace = CullingFace::BackFace;
+        CullingFront cullingFront = CullingFront::CounterClockwise;
+    };
 
 
     class Renderer
     {
         public:
 
-            Renderer(IContext& contexts);
+            Renderer(IContext& contexts, const RendererSettings& settings);
             Renderer(const Renderer& other) = delete;
             Renderer(Renderer&& other) = delete;
             ~Renderer() = default;

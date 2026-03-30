@@ -5,14 +5,47 @@
 #include <string>
 #include <utility>
 #include <ranges>
+#include <array>
 
 #include <Crioulo/renderer.h>
 #include <Crioulo/internal/debug_gl.h>
 
-
 using namespace Crioulo;
 
-Renderer::Renderer(IContext& context) :
+namespace {
+    constexpr auto DEPTH_TEST_FUNCTION_MAPPING = std::to_array<int>({
+#define X(name, gl_val) gl_val,
+        DEPTH_TEST_FUNCTION_LIST
+#undef X
+    });
+
+    constexpr auto CULLING_FACE_MAPPING = std::to_array<int>({
+#define X(name, gl_val) gl_val,
+        CULLING_FACE_LIST
+#undef X
+    });
+
+    constexpr auto CULLING_FRONT_MAPPING = std::to_array<int>({
+#define X(name, gl_val) gl_val,
+        CULLING_FRONT_LIST
+#undef X
+    });
+
+    int toGlEnum(DepthTestFunction in) {
+        return DEPTH_TEST_FUNCTION_MAPPING[static_cast<int>(in)];
+    }
+
+    int toGlEnum(CullingFace in) {
+        return CULLING_FACE_MAPPING[static_cast<int>(in)];
+    }
+
+    int toGlEnum(CullingFront in) {
+        return CULLING_FRONT_MAPPING[static_cast<int>(in)];
+    }
+};
+
+
+Renderer::Renderer(IContext& context, const RendererSettings& settings) :
     m_contextManager(GlobalContextManager::getInstance()),
     m_context(context),
     m_camera(Camera{}),
@@ -34,8 +67,18 @@ Renderer::Renderer(IContext& context) :
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
     }
 
-    glEnable(GL_DEPTH_TEST);
+    // Set up
+    if (settings.depthTest) {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(toGlEnum(settings.depthTestFunction));
+    }
     
+    if (settings.faceCulling) {
+        glEnable(GL_CULL_FACE);
+        glCullFace(toGlEnum(settings.cullingFace));
+        glFrontFace(toGlEnum(settings.cullingFront));
+    }    
+
     // Creating Uniform Buffer Objects
     glGenBuffers(1, &m_uboTransformMatrices);
     glBindBuffer(GL_UNIFORM_BUFFER, m_uboTransformMatrices);
