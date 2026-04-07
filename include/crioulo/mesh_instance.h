@@ -25,7 +25,7 @@ namespace Crioulo
         MeshInstance(std::shared_ptr<Mesh> mesh, const Material& material) : 
             m_mesh(mesh),
             m_material(material),
-            m_transform(glm::mat4(0.0f))
+            m_transform(glm::mat4())
         {
             if (!mesh) {
                 throw std::runtime_error("Mesh must not be nullptr.");

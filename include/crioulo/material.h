@@ -23,7 +23,7 @@ namespace Crioulo
         friend class Renderer;
         friend class MeshInstance;
         
-        Material(const std::shared_ptr<Shader>& shader, const std::vector<TextureSlot> textureSlots) :
+        Material(const std::shared_ptr<Shader>& shader, const std::vector<TextureSlot>& textureSlots) :
             m_shader(shader),
             m_textures(textureSlots)
         {

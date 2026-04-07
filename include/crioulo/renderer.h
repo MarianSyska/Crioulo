@@ -71,7 +71,7 @@ namespace Crioulo
             Renderer(IContext& contexts, const RendererSettings& settings);
             Renderer(const Renderer& other) = delete;
             Renderer(Renderer&& other) = delete;
-            ~Renderer() = default;
+            ~Renderer();
 
             Renderer* operator=(const Renderer& other) = delete;
             Renderer* operator=(Renderer&& other) = delete;
@@ -92,7 +92,8 @@ namespace Crioulo
                 std::shared_ptr<Mesh> ptr(mesh, deleter);
                 return ptr;
             }
-            std::shared_ptr<Texture> loadTexture(const TextureData& data);
+            std::shared_ptr<Texture> loadTexture(const Texture2DData& data);
+            std::shared_ptr<Texture> loadTexture(const CubeMapTextureData& data);
             std::shared_ptr<Shader> loadShader(const char* vertexCode, const char* fragmentCode);
 
             MeshInstance* createMeshInstance(std::shared_ptr<Mesh> mesh, const Material& material);
@@ -103,9 +104,10 @@ namespace Crioulo
             
             inline void adjustViewport(int x, int y, int width, int height) {
                 m_contextManager.makeCurrent(m_context);
-                glViewport(0, 0, width, height);
+                glViewport(x, y, width, height);
             }
 
+            void setSkyBox(std::shared_ptr<Texture> texture);
             inline void setCamera(const Camera& camera) {
                 m_camera = camera;
             }
@@ -114,6 +116,8 @@ namespace Crioulo
                 m_surfaceRatio = surfaceRatio;
             }
         
+            void removeSkyBox();
+
             static void bindOpenGLFunctions(void* (* getProcAddress)(const char*));
 
         private:
@@ -128,6 +132,7 @@ namespace Crioulo
             Camera m_camera;
             std::unordered_set<MeshInstance*> m_instances;
             std::unordered_set<PointLight*> m_pointLights;
+            MeshInstance* m_skyBox;
 
             unsigned int m_uboTransformMatrices;
             unsigned int m_uboPointLights;
