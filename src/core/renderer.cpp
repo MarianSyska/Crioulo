@@ -11,6 +11,7 @@
 
 #include <Crioulo/renderer.h>
 #include <Crioulo/internal/debug_gl.h>
+#include <Crioulo/internal/primitive_shapes.h>
 
 using namespace Crioulo;
 
@@ -88,7 +89,8 @@ Renderer::Renderer(IContext& context, const RendererSettings& settings) :
     m_contextManager(GlobalContextManager::getInstance()),
     m_context(context),
     m_camera(Camera{}),
-    m_surfaceRatio(1.0f)
+    m_surfaceRatio(1.0f),
+    m_skyBox(nullptr)
 {
     if (!isInitialized)
         throw std::runtime_error("OpenGL functions have not been initialized");
@@ -259,10 +261,13 @@ void Crioulo::Renderer::setSkyBox(std::shared_ptr<Texture> texture) {
     }
 
     std::shared_ptr<Shader> shader = loadShader(Shaders::Internal::skybox_vert.data(), Shaders::Internal::skybox_frag.data());
+
+    using namespace PrimitiveShapes;
     MeshData<SimpleVertex> data{ 
-        std::vector<SimpleVertex>(cubeVertices.begin(), cubeVertices.end()),
-        std::vector<unsigned int>(cubeIndices.begin(), cubeIndices.end())
+        std::vector<SimpleVertex>(UNIT_CUBE.vertices.begin(), UNIT_CUBE.vertices.end()),
+        std::vector<unsigned int>(UNIT_CUBE.indices.begin(), UNIT_CUBE.indices.end())
     };
+
     std::shared_ptr<Mesh> mesh = loadMesh(data);
     Material material(shader, {{texture, "skyBox"}});
 
