@@ -4,17 +4,27 @@ project(Crioulo)
 include(CMakeDependentOption)
 include("cmake/GenerateShaderHeaders.cmake")
 
-option(CRIOULO_INCLUDE_TRACY "Include tracy profiling" OFF)
+
+# Define Options and Cache Variables
+option(CRIOULO_INCLUDE_TRACY "Include tracy profiling." OFF)
 cmake_dependent_option(CRIOULO_TRACY_ENABLE 
-    "Enable the tracy profiler logic" ON 
+    "Enable the tracy profiler logic." ON 
     "CRIOULO_INCLUDE_TRACY" OFF)
 
 if(NOT CRIOULO_INCLUDE_TRACY)
-    set(CRIOULO_TRACY_ENABLE OFF CACHE BOOL "Enable the tracy profiler logic" FORCE)
+    set(CRIOULO_TRACY_ENABLE OFF CACHE BOOL "Enable the tracy profiler logic." FORCE)
+endif()
+
+set(CRIOULO_LOGGING_LEVEL "6" CACHE STRING "Set Logging Level.")
+
+if(MSVC)
+    add_compile_options(/utf-8)
 endif()
 
 
+# Find Packages
 find_package(OpenGL REQUIRED)
+
 
 # Configure GLM Libary
 file(GLOB_RECURSE GLM_HEADER_FILES CONFIGURE_DEPENDS 
@@ -28,7 +38,7 @@ target_sources(glm
     INTERFACE 
         FILE_SET HEADERS
         BASE_DIRS 
-            "include"
+            "${CMAKE_CURRENT_SOURCE_DIR}/include"
         FILES 
             ${GLM_HEADER_FILES}
 )
@@ -51,11 +61,29 @@ target_sources(tracy
             "lib/tracy/public/tracy/Tracy.hpp"
 )
 
+# Configure spdlog
+file(GLOB_RECURSE SPDLOG_HEADERS CONFIGURE_DEPENDS 
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/spdlog/*.hpp" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/spdlog/*.h"  
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/spdlog/*.inl"
+)
+
+add_library(spdlog INTERFACE)
+target_sources(spdlog
+    INTERFACE
+        FILE_SET HEADERS
+        BASE_DIRS
+            "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        FILES
+            ${SPDLOG_HEADERS}
+)
+
 generate_shaders("shaders" "${CMAKE_CURRENT_BINARY_DIR}/shaders/shaders")
 
 # Set 
 set(SOURCES 
     "src/core/renderer.cpp" 
+    "src/core/init.cpp"
     "src/glad.c"
     "src/core/global_context_manager.cpp"
 )
@@ -88,7 +116,11 @@ target_compile_features(Crioulo PUBLIC cxx_std_20)
 set_target_properties(Crioulo PROPERTIES LINKER_LANGUAGE CXX)
 if (MSVC)
 	target_compile_options(Crioulo PRIVATE /W4)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
+
+target_compile_definitions(Crioulo PRIVATE SPDLOG_ACTIVE_LEVEL=${CRIOULO_LOGGING_LEVEL})
 
 source_group("shaders" 
 	FILES 
@@ -135,6 +167,7 @@ target_sources(Crioulo
 target_link_libraries(Crioulo 
     PRIVATE 
         OpenGL::GL
+        spdlog
     PUBLIC
         glm
 )

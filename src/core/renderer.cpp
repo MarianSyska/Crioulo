@@ -8,10 +8,12 @@
 #include <array>
 #include <shaders/internal/skybox_frag.hpp>
 #include <shaders/internal/skybox_vert.hpp>
+#include <spdlog/spdlog.h>
 
 #include <Crioulo/renderer.h>
 #include <Crioulo/internal/debug_gl.h>
 #include <Crioulo/internal/primitive_shapes.h>
+#include <crioulo/init.h>
 
 using namespace Crioulo;
 
@@ -106,18 +108,21 @@ Renderer::Renderer(IContext& context, const RendererSettings& settings) :
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback((GLDEBUGPROC)logOpenGL, nullptr);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+        SPDLOG_DEBUG("Renderer Initialzation: Activated OpenGL Debugging.");
     }
 
     // Set up
     if (settings.depthTest) {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(toGlEnum(settings.depthTestFunction));
+        SPDLOG_DEBUG("Renderer Initialzation: Activated depth testing.");
     }
     
     if (settings.faceCulling) {
         glEnable(GL_CULL_FACE);
         glCullFace(toGlEnum(settings.cullingFace));
         glFrontFace(toGlEnum(settings.cullingFront));
+        SPDLOG_DEBUG("Renderer Initialzation: Activated face culling.");
     }    
 
     // Creating Uniform Buffer Objects
@@ -134,6 +139,8 @@ Renderer::Renderer(IContext& context, const RendererSettings& settings) :
     glBufferData(GL_UNIFORM_BUFFER, pointLightsBlockSize, NULL, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_uboPointLights);
+
+    SPDLOG_DEBUG("Initialized Renderer.");
 }
 
 Crioulo::Renderer::~Renderer(){
@@ -145,9 +152,11 @@ Crioulo::Renderer::~Renderer(){
         delete instance;
     }
 
-    if (!m_skyBox) {
+    if (m_skyBox) {
         delete m_skyBox;
     }
+
+    SPDLOG_DEBUG("Destructed Renderer.");
 }
 
 void Renderer::drawScene()
@@ -174,6 +183,7 @@ void Renderer::drawScene()
 
     // Draw SkyBox
     if (m_skyBox) {
+        SPDLOG_DEBUG("Renderer Draw: Draw sky box.");
         glDepthMask(GL_FALSE);
         m_skyBox->draw();
         glDepthMask(GL_TRUE);
@@ -271,18 +281,8 @@ void Crioulo::Renderer::setSkyBox(std::shared_ptr<Texture> texture) {
     std::shared_ptr<Mesh> mesh = loadMesh(data);
     Material material(shader, {{texture, "skyBox"}});
 
-    if (!m_skyBox) {
+    if (m_skyBox) {
         delete m_skyBox;
     }
     m_skyBox = new MeshInstance(mesh, material);
-}
-
-void Renderer::bindOpenGLFunctions(void* (* getProcAddress)(const char*))
-{
-    if (isInitialized) return;
-    if (!gladLoadGLLoader((GLADloadproc)getProcAddress))
-    {
-        throw std::runtime_error("Failed to initialize OpenGL functions");
-    }
-    isInitialized = true;
 }

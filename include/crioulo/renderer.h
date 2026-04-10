@@ -118,11 +118,7 @@ namespace Crioulo
         
             void removeSkyBox();
 
-            static void bindOpenGLFunctions(void* (* getProcAddress)(const char*));
-
         private:
-
-            inline static bool isInitialized = false;
 
             GlobalContextManager& m_contextManager;
             IContext& m_context;
