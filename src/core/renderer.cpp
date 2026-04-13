@@ -10,6 +10,7 @@
 #include <shaders/internal/skybox_vert.hpp>
 #include <spdlog/spdlog.h>
 
+#include <Crioulo/internal/util/include_shaders.h>
 #include <Crioulo/renderer.h>
 #include <Crioulo/internal/debug_gl.h>
 #include <Crioulo/internal/primitive_shapes.h>
@@ -27,34 +28,8 @@ namespace {
            { 0, 3, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*) offsetof(SimpleVertex, position)}
     };
 
-    const std::array<SimpleVertex, 8> cubeVertices{{
-            // Front face
-            { { -1.0f,  1.0f,  1.0f } }, // 0: Top-left
-            { { -1.0f, -1.0f,  1.0f } }, // 1: Bottom-left
-            { {  1.0f, -1.0f,  1.0f } }, // 2: Bottom-right
-            { {  1.0f,  1.0f,  1.0f } }, // 3: Top-right
-
-            // Back face
-            { { -1.0f,  1.0f, -1.0f } }, // 4: Top-left
-            { { -1.0f, -1.0f, -1.0f } }, // 5: Bottom-left
-            { {  1.0f, -1.0f, -1.0f } }, // 6: Bottom-right
-            { {  1.0f,  1.0f, -1.0f } }  // 7: Top-right
+    constexpr std::array<const std::array<const char*, 2>, 0> SHADER_INCLUDES = {{
     }};
-
-    constexpr std::array<unsigned int, 36> cubeIndices{ {
-            // Front Face
-            0, 2, 1,  0, 3, 2,
-            // Back Face
-            4, 5, 6,  4, 6, 7,
-            // Left Face
-            4, 1, 5,  4, 0, 1,
-            // Right Face
-            3, 6, 2,  3, 7, 6,
-            // Top Face
-            4, 3, 0,  4, 7, 3,
-            // Bottom Face
-            1, 6, 5,  1, 2, 6
-    } };
 
     constexpr auto DEPTH_TEST_FUNCTION_MAPPING = std::to_array<int>({
 #define X(name, gl_val) gl_val,
@@ -225,8 +200,11 @@ std::shared_ptr<Texture> Crioulo::Renderer::loadTexture(const CubeMapTextureData
 
 std::shared_ptr<Shader> Renderer::loadShader(const char* vertexCode, const char* fragmentCode)
 {
+    auto preprocessedVertexCode = Util::includeShaders(vertexCode, SHADER_INCLUDES);
+    auto preprocessedFragmentCode = Util::includeShaders(fragmentCode, SHADER_INCLUDES);
+
     m_contextManager.makeCurrent(m_context);
-    Shader* shader = new Shader(vertexCode, fragmentCode);
+    Shader* shader = new Shader(preprocessedVertexCode.get(), preprocessedFragmentCode.get());
 
     auto deleter = [this](Shader* shader) {
         this->m_contextManager.makeCurrent(m_context);
@@ -234,7 +212,6 @@ std::shared_ptr<Shader> Renderer::loadShader(const char* vertexCode, const char*
     };
 
     std::shared_ptr<Shader> ptr(shader, deleter);
-
     shader->setUniformBlockBinding("TransformMatrices", 0);
     shader->setUniformBlockBinding("PointLights", 1);
 

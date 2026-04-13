@@ -86,6 +86,8 @@ set(SOURCES
     "src/core/init.cpp"
     "src/glad.c"
     "src/core/global_context_manager.cpp"
+    "src/stb_include/stb_include.cpp"
+    "src/util/include_shaders.cpp"
 )
 
 set(CRIOULO_SHADER_HEADER_FILES 
@@ -147,6 +149,7 @@ target_sources(Crioulo
             ${PRIVATE_CRIOULO_HEADER_FILES}
             "${CMAKE_CURRENT_SOURCE_DIR}/include/glad/glad.h"
             "${CMAKE_CURRENT_SOURCE_DIR}/include/KHR/khrplatform.h"
+            "${CMAKE_CURRENT_SOURCE_DIR}/include/stb_include/stb_include.h"
 
         FILE_SET shaderHeaders
         TYPE HEADERS
