@@ -63,6 +63,11 @@ namespace Crioulo
         CullingFront cullingFront = CullingFront::CounterClockwise;
     };
 
+    struct alignas(16) SceneData {
+        GLint lightCounts;
+        alignas(16) glm::vec3 cameraPosition;
+    };
+
 
     class Renderer
     {
@@ -132,6 +137,7 @@ namespace Crioulo
 
             unsigned int m_uboTransformMatrices;
             unsigned int m_uboPointLights;
+            unsigned int m_uboSceneData;
     };
 }
 #endif

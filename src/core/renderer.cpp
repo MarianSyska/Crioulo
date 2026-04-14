@@ -117,6 +117,12 @@ Renderer::Renderer(IContext& context, const RendererSettings& settings) :
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_uboPointLights);
 
+    glGenBuffers(1, &m_uboSceneData);
+    glBindBuffer(GL_UNIFORM_BUFFER, m_uboSceneData);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(SceneData), NULL, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_uboPointLights);
+
     SPDLOG_DEBUG("Initialized Renderer.");
 }
 
@@ -155,10 +161,13 @@ void Renderer::drawScene()
         const GLintptr offset = i * sizeof(PointLight);
         glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(PointLight), (void*)&pointLight);
         i++;
-    } 
+    }
+
+    SceneData data{m_pointLights.size(), m_camera.position};
+    glBindBuffer(GL_UNIFORM_BUFFER, m_uboSceneData);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(SceneData), &data);
+
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-
 
     // Draw SkyBox
     if (m_skyBox) {
@@ -218,6 +227,7 @@ std::shared_ptr<Shader> Renderer::loadShader(const char* vertexCode, const char*
     std::shared_ptr<Shader> ptr(shader, deleter);
     shader->setUniformBlockBinding("TransformMatrices", 0);
     shader->setUniformBlockBinding("PointLights", 1);
+    shader->setUniformBlockBinding("SceneData", 2);
 
     return ptr;
 }
