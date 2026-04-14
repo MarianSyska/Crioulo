@@ -11,29 +11,29 @@ function(capitalize_string INPUT_STR OUTPUT_VAR)
     set(${OUTPUT_VAR} "${FIRST_CHAR}${REMAINDER}" PARENT_SCOPE)
 endfunction()
 
-function(generate_shaders SOURCE_DIR TARGET_DIR)
 
-    cmake_path(IS_RELATIVE SOURCE_DIR IS_RELATIVE_SOURCE_DIR)
-    if(IS_RELATIVE_SOURCE_DIR)
-        set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_DIR}")
-    endif()
+function(generate_shaders BASE_DIR SHADER_FILES TARGET_DIR OUT_HEADER_FILES)
 
-    cmake_path(IS_RELATIVE TARGET_DIR IS_RELATIVE_TARGET_DIR)
-    if(IS_RELATIVE_TARGET_DIR)
-        set(TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR}")
-    endif()
+    cmake_path(ABSOLUTE_PATH BASE_DIR BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
+    foreach(SHADER_FILE ${SHADER_FILES})
+        cmake_path(ABSOLUTE_PATH SHADER_FILE BASE_DIRECTORY BASE_DIR)
+    endforeach()
+
+    cmake_path(ABSOLUTE_PATH TARGET_DIR BASE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
     file(MAKE_DIRECTORY "${TARGET_DIR}")
-    file(GLOB_RECURSE SHADER_FILES CONFIGURE_DEPENDS "${SOURCE_DIR}/*.vert" "${SOURCE_DIR}/*.frag" "${SOURCE_DIR}/*.glsl")
 
-    foreach(SHADER_PATH ${SHADER_FILES})
+    set(GENERATED_HEADER_FILES "")
+
+    foreach(SHADER_FILE ${SHADER_FILES})
         # Seperate filename from extension
-        cmake_path(GET SHADER_PATH STEM FILENAME)
-        cmake_path(GET SHADER_PATH EXTENSION FILE_EXTENSION)
+        cmake_path(GET SHADER_FILE STEM FILENAME)
+        cmake_path(GET SHADER_FILE EXTENSION FILE_EXTENSION)
         string(SUBSTRING "${FILE_EXTENSION}" 1 -1 FILE_EXTENSION)
 
         # Get relative path components
-        cmake_path(RELATIVE_PATH SHADER_PATH BASE_DIRECTORY "${SOURCE_DIR}" OUTPUT_VARIABLE SHADER_RELATIVE_PATH)
+        cmake_path(RELATIVE_PATH SHADER_FILE BASE_DIRECTORY "${BASE_DIR}" OUTPUT_VARIABLE SHADER_RELATIVE_PATH)
         cmake_path(GET SHADER_RELATIVE_PATH PARENT_PATH SHADER_FOLDER_PATH)
 
         # Create list of path components
@@ -51,18 +51,16 @@ function(generate_shaders SOURCE_DIR TARGET_DIR)
         set(VAR_NAME "${FILENAME}_${FILE_EXTENSION}")
         set(HEADER_PATH "${TARGET_DIR}/${SHADER_FOLDER_PATH}/${VAR_NAME}.hpp")
 
-        message("Shader Source Path: ${SHADER_PATH}")
-        message("Header Target Path: ${HEADER_PATH}")
-        message("Variable Name: ${VAR_NAME}")
-        message("Namespace Name: ${NAMESPACE_NAME}")
-
         add_custom_command(
             OUTPUT ${HEADER_PATH}
             COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/shader2header.py" 
-                    ${SHADER_PATH} ${HEADER_PATH} ${VAR_NAME} ${NAMESPACE_NAME}
-            DEPENDS ${SHADER_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/shader2header.py"
+                    ${SHADER_FILE} ${HEADER_PATH} ${VAR_NAME} "${NAMESPACE_NAME}"
+            DEPENDS ${SHADER_FILE} "${CMAKE_CURRENT_SOURCE_DIR}/shader2header.py"
             COMMENT "Embedding shader: ${NAMESPACE_NAME}::${VAR_NAME}"
         )
+
+        list(APPEND GENERATED_HEADER_FILES ${HEADER_PATH})
     endforeach()
 
+    set(${OUT_HEADER_FILES} ${GENERATED_HEADER_FILES} PARENT_SCOPE)
 endfunction()
