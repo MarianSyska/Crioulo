@@ -150,7 +150,7 @@ void Renderer::drawScene()
     glBindBuffer(GL_UNIFORM_BUFFER, m_uboPointLights);
     unsigned int i = 0;
     for (const auto& pointLight : m_pointLights) {
-        const GLintptr offset = i + sizeof(PointLight);
+        const GLintptr offset = i * sizeof(PointLight);
         glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(PointLight), (void*)&pointLight);
         i++;
     } 
