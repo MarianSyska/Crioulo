@@ -8,6 +8,7 @@
 #include <array>
 #include <shaders/internal/skybox_frag.hpp>
 #include <shaders/internal/skybox_vert.hpp>
+#include <shaders/pbr_glsl.hpp>
 #include <spdlog/spdlog.h>
 
 #include <Crioulo/internal/util/include_shaders.h>
@@ -28,7 +29,8 @@ namespace {
            { 0, 3, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), (void*) offsetof(SimpleVertex, position)}
     };
 
-    constexpr std::array<const std::array<const char*, 2>, 0> SHADER_INCLUDES = {{
+    constexpr std::array<const std::array<const char*, 2>, 1> SHADER_INCLUDES = {{
+        {"pbr", Shaders::pbr_glsl.data()}
     }};
 
     constexpr auto DEPTH_TEST_FUNCTION_MAPPING = std::to_array<int>({
@@ -155,6 +157,8 @@ void Renderer::drawScene()
         i++;
     } 
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
 
     // Draw SkyBox
     if (m_skyBox) {
