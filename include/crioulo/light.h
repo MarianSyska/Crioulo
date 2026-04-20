@@ -10,9 +10,9 @@ namespace Crioulo
     {
         friend class Renderer;
 
-        glm::vec3 position;
-        alignas(16) glm::vec3 color;
-        alignas(16) float intensity;
+        glm::vec3 color;
+        alignas(16) glm::vec3 position;
+        float intensity;
 
     private:
         PointLight() = default;

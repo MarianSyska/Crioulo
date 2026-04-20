@@ -9,6 +9,12 @@ struct SurfaceProperties {
     vec3 worldPosition;
 };
 
+struct PointLight {
+	vec3 color;
+	vec3 position;
+	float intensity;
+};
+
 // ----------------------------------------------------------------------------
 // Easy trick to get tangent-normals to world-space to keep PBR code simplified.
 // Don't worry if you don't get what's going on; you generally want to do normal 
