@@ -43,7 +43,7 @@ namespace Crioulo
             m_material.use();
             constexpr GLsizei uniformCount = 1;
             constexpr GLboolean shouldTranspose = GL_FALSE;
-            glUniformMatrix4fv(m_material.getUniformLocation("model"), uniformCount, shouldTranspose, glm::value_ptr(m_transform));
+            glUniformMatrix4fv(m_material.getUniformLocation("uModel"), uniformCount, shouldTranspose, glm::value_ptr(m_transform));
             m_mesh->draw();
         }
     };
