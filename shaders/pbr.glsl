@@ -1,4 +1,3 @@
-
 const float kCRIOULO_PI = 3.14159265359;
 
 struct SurfaceProperties {
@@ -35,7 +34,8 @@ vec3 getNormalFromMap(vec3 pNormal, vec2 pTextChoord, vec3 pWorldPosition)
 
 float crioulo_distribution_ggx(vec3 N, vec3 H, float roughness)
 {
-    float a = roughness*roughness;
+    float r = max(roughness, 0.1);
+    float a = r*r;
     float a2 = a*a;
     float NdotH = max(dot(N, H), 0.0);
     float NdotH2 = NdotH*NdotH;
@@ -44,7 +44,7 @@ float crioulo_distribution_ggx(vec3 N, vec3 H, float roughness)
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = kCRIOULO_PI * denom * denom;
 
-    return nom / denom;
+    return nom / max(denom, 0.0000001);
 }
 
 
@@ -77,8 +77,9 @@ vec3 crioulo_fresnel_schlick(float cosTheta, vec3 F0)
 }
 
 
-vec3 crioulo_pbr(SurfaceProperties pProperties, int pLightCount, vec3 pLightPositions[4], vec3 pLightColors[4], vec3 pCameraPosition)
+vec3 crioulo_pbr(SurfaceProperties pProperties, PointLight pPointLights[4], uint pPointLightCount, vec3 pCameraPosition)
 {
+	pPointLightCount = max(min(pPointLightCount, 4u), 0u);
     vec3 V = normalize(pCameraPosition - pProperties.worldPosition);
 
     vec3 F0 = vec3(0.04); 
@@ -86,23 +87,23 @@ vec3 crioulo_pbr(SurfaceProperties pProperties, int pLightCount, vec3 pLightPosi
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < pLightCount; ++i)
+    for(uint i = 0u; i < pPointLightCount; i++)
     {
         // calculate per-light radiance
-        vec3 L = normalize(pLightPositions[i] - pProperties.worldPosition);
+        vec3 L = normalize(pPointLights[i].position - pProperties.worldPosition);
         vec3 H = normalize(pProperties.normal + L);
-        float distance = length(pLightPositions[i] - pCameraPosition);
+        float distance = length(pPointLights[i].position - pProperties.worldPosition);
         float attenuation = 1.0 / (distance * distance);
-        vec3 radiance = pLightColors[i] * attenuation;
+        vec3 radiance = pPointLights[i].color * pPointLights[i].intensity * attenuation;
 
         // Cook-Torrance BRDF
-        float NDF = crioulo_distribution_ggx(pProperties.normal, H, pProperties.roughness);   
+        float NDF = crioulo_distribution_ggx(pProperties.normal, H, pProperties.roughness);
         float G   = crioulo_geometry_smith(pProperties.normal, V, L, pProperties.roughness);      
         vec3 F    = crioulo_fresnel_schlick(max(dot(H, V), 0.0), F0);
            
         vec3 numerator    = NDF * G * F; 
         float denominator = 4.0 * max(dot(pProperties.normal, V), 0.0) * max(dot(pProperties.normal, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
-        vec3 specular = numerator / denominator;
+        vec3 specular     = numerator / denominator;
         
         // kS is equal to Fresnel
         vec3 kS = F;
