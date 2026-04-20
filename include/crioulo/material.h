@@ -18,11 +18,13 @@ namespace Crioulo
         std::string slot;
     };
 
-    struct Material
+    class Material
     {
         friend class Renderer;
         friend class MeshInstance;
         
+    public:
+
         Material(const std::shared_ptr<Shader>& shader, const std::vector<TextureSlot>& textureSlots) :
             m_shader(shader),
             m_textures(textureSlots)

@@ -28,9 +28,9 @@ namespace Crioulo
         GLenum type,
         GLuint id,
         GLenum severity,
-        GLsizei length,
+        [[maybe_unused]] GLsizei length,
         const GLchar* message,
-        const void* userParam)
+        [[maybe_unused]] const void* userParam)
     {
         if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // ignore these non-significant error codes
 
