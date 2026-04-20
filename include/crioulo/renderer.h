@@ -64,7 +64,7 @@ namespace Crioulo
     };
 
     struct alignas(16) SceneData {
-        GLint lightCounts;
+        GLuint lightCounts;
         alignas(16) glm::vec3 cameraPosition;
     };
 
