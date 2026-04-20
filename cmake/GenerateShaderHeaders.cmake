@@ -50,12 +50,14 @@ function(generate_shaders BASE_DIR SHADER_FILES TARGET_DIR OUT_HEADER_FILES)
 
         set(VAR_NAME "${FILENAME}_${FILE_EXTENSION}")
         set(HEADER_PATH "${TARGET_DIR}/${SHADER_FOLDER_PATH}/${VAR_NAME}.hpp")
+        
+        set(SHADER_2_HEADER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/shader2header.py")
 
         add_custom_command(
             OUTPUT ${HEADER_PATH}
-            COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/shader2header.py" 
+            COMMAND ${Python3_EXECUTABLE} ${SHADER_2_HEADER_SCRIPT} 
                     ${SHADER_FILE} ${HEADER_PATH} ${VAR_NAME} "${NAMESPACE_NAME}"
-            DEPENDS ${SHADER_FILE} "${CMAKE_CURRENT_SOURCE_DIR}/shader2header.py"
+            DEPENDS ${SHADER_FILE} ${SHADER_2_HEADER_SCRIPT}
             COMMENT "Embedding shader: ${NAMESPACE_NAME}::${VAR_NAME}"
         )
 
