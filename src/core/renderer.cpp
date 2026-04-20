@@ -121,7 +121,7 @@ Renderer::Renderer(IContext& context, const RendererSettings& settings) :
     glBindBuffer(GL_UNIFORM_BUFFER, m_uboSceneData);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(SceneData), NULL, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_uboPointLights);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_uboSceneData);
 
     SPDLOG_DEBUG("Initialized Renderer.");
 }
@@ -157,9 +157,9 @@ void Renderer::drawScene()
 
     glBindBuffer(GL_UNIFORM_BUFFER, m_uboPointLights);
     unsigned int i = 0;
-    for (const auto& pointLight : m_pointLights) {
+    for (const PointLight* pointLight : m_pointLights) {
         const GLintptr offset = i * sizeof(PointLight);
-        glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(PointLight), (void*)&pointLight);
+        glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(PointLight), (void*)pointLight);
         i++;
     }
 
@@ -225,9 +225,9 @@ std::shared_ptr<Shader> Renderer::loadShader(const char* vertexCode, const char*
     };
 
     std::shared_ptr<Shader> ptr(shader, deleter);
-    shader->setUniformBlockBinding("TransformMatrices", 0);
-    shader->setUniformBlockBinding("PointLights", 1);
-    shader->setUniformBlockBinding("SceneData", 2);
+    shader->setUniformBlockBinding("uTransformMatrices", 0);
+    shader->setUniformBlockBinding("uPointLights", 1);
+    shader->setUniformBlockBinding("uSceneData", 2);
 
     return ptr;
 }
