@@ -1,6 +1,6 @@
 # Crioulo OpenGL Rendering Library
 
-Crioulo is a 3D rendering library written in C++ leveraging the OpenGL API. It serves as an educational project to explore the fundamentals of computer graphics and OpenGL.The repository CriouloDemo provides comprehensive implementation examples.
+Crioulo is a 3D rendering library written in C++ leveraging the OpenGL API. It serves as an educational project to explore the fundamentals of computer graphics and OpenGL. The repository CriouloDemo provides comprehensive implementation examples.
 
 ## Build Instructions
 
