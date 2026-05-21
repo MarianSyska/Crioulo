@@ -155,18 +155,26 @@ lib/tracy/                  Tracy profiler submodule
 
 ## Roadmap
 
-- [x] PBR Support
+- [x] VBO, VAO, EBO creation and management
+- [x] C++20 Concepts for Vertex format validation
+- [x] Texture loading and management
+- [x] Shader compilation and loading
+- [x] UBO System
+- [x] Build-Time Shader Embedding 
 - [x] Automatic `#include` handling for shaders
+- [x] Gamma Correction
+- [x] HDR Support
+- [x] Skybox Rendering 
+- [x] PBR Support
+- [ ] Consistent Logging
+- [ ] Full-fledged Profiling
+- [ ] Clang-Format & clang-tidy
+- [ ] Tests
 - [ ] Screen Space Ambient Occlusion
 - [ ] Screen Space Reflections
 - [ ] Static Shadow Mapping
 - [ ] Instanced Rendering
-- [ ] HDR Support
-- [ ] Gamma Correction
 - [ ] Deferred Rendering
-- [ ] Improved Logging
-- [ ] Tests
-- [ ] Clang-Format & clang-tidy
 - [ ] Bloom Effect
 
 ## License
